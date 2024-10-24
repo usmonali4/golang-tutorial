@@ -8,6 +8,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+var DB *gorm.DB
+
 func ConnectDB() {
 	dbURL := os.Getenv("DB_URL")
 
@@ -20,5 +22,7 @@ func ConnectDB() {
 		fmt.Println("We are connected to the database ")
 	}
 
-	db.AutoMigrate(&User{})
+	DB = db
+
+	DB.AutoMigrate(&User{})
 }
