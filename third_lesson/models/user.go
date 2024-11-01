@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/jinzhu/gorm"
+	"github.com/usmonali4/jwt_auth/utils/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -40,6 +41,32 @@ func (u *User) BeforeSave(tx *gorm.DB) error {
 
 }
 
-// func LoginCheck(username, password string) (string, error) {
-	
-// }
+func VerifyPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func LoginCheck(username, password string) (string, error) {
+	var err error
+
+	u := User{}
+
+	err = DB.Model(User{}).Where("username = ?", username).Take(&u).Error
+
+	if err != nil {
+		return "", err
+	}
+
+	err = VerifyPassword(password, u.Password)
+
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		return "", err
+	}
+
+	token,err := token.GenerateToken(u.ID)
+
+	if err != nil {
+		return "",err
+	}
+
+	return token,nil
+}
