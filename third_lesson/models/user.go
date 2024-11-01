@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"html"
 	"strings"
 
@@ -8,6 +9,24 @@ import (
 	"github.com/usmonali4/jwt_auth/utils/token"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func GetUserByID(uid uint) (User,error) {
+
+	var u User
+
+	if err := DB.First(&u,uid).Error; err != nil {
+		return u, errors.New("user not found")
+	}
+
+	u.PrepareGive()
+	
+	return u,nil
+
+}
+
+func (u *User) PrepareGive(){
+	u.Password = ""
+}
 
 
 type User struct {
