@@ -1,10 +1,14 @@
 package main
 
-import "log"
+import (
+	env "lesson4/internal"
+	"log"
+)
 
 func main() {
+
 	cfg := config{
-		addr: ":8080",
+		addr: env.GetString("ADDR"),
 	}
 
 	app := &application{
